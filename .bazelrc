@@ -1,0 +1,23 @@
+# bzlmod is the source of truth; no WORKSPACE.
+common --enable_bzlmod
+
+# Persist caches in the workspace tree (gitignored) so they survive container
+# restarts that wipe $HOME. Both are content-addressable -> safe on any fs.
+build  --disk_cache=.bazel-disk-cache
+common --repository_cache=.bazel-repo-cache
+# Bazel 8's repo-contents cache refuses to live inside the workspace; disable it
+# (the content-addressed archive cache above still persists downloads in-tree).
+common --repo_contents_cache=
+
+# Hermetic action env so the on-disk cache is correct across machines.
+build --incompatible_strict_action_env
+
+# The @grenv repository rule shells out to `nix`; let it see a sane PATH and the
+# Nix profile regardless of the (stripped) client env.
+common --repo_env=PATH=/nix/var/nix/profiles/default/bin:/usr/local/bin:/usr/bin:/bin
+
+# Some Bazel/bundled-JDK combos emit SVE instructions that SIGILL the JVM on
+# certain aarch64 hosts. Harmless where unsupported, so set unconditionally.
+startup --host_jvm_args=-XX:UseSVE=0
+
+test --test_output=errors

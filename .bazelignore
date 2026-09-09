@@ -1,0 +1,5 @@
+.bazel-disk-cache
+.bazel-repo-cache
+.bazelisk
+.venv
+result

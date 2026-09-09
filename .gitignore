@@ -1,0 +1,19 @@
+# Bazel
+/bazel-*
+/.bazel-disk-cache/
+/.bazel-repo-cache/
+/.bazelisk/
+
+# Nix
+/result
+/result-*
+
+# Python
+__pycache__/
+*.pyc
+/.venv/
+
+# Local captures / scratch
+/captures/
+*.iq
+*.cfile

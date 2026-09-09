@@ -1,0 +1,50 @@
+"""ai-sdr: a general interface for AIs/agents to drive software-defined radios.
+
+One Bazel graph: a hermetic rules_python interpreter (3.11, matching the Python
+that Nix builds GNU Radio against) runs GNU Radio flowgraphs described as py_binary
+targets, headless. GNU Radio itself comes from Nix (see //nix:grenv.bzl) and is
+layered onto sys.path at runtime; pip deps are managed with rules_uv. Real radios
+are reached via gr-osmosdr (HackRF One is the currently-tested device).
+"""
+
+module(
+    name = "ai_sdr",
+    version = "0.0.0",
+    compatibility_level = 1,
+)
+
+# ---------------------------------------------------------------------------
+# Rule sets (pinned; bump intentionally and record in README decision log).
+# ---------------------------------------------------------------------------
+bazel_dep(name = "rules_python", version = "1.4.1")
+bazel_dep(name = "rules_uv", version = "0.86.0")
+
+# ---------------------------------------------------------------------------
+# Hermetic Python. 3.11 is REQUIRED: GNU Radio's compiled (pybind11) extension
+# modules from Nix are built against CPython 3.11, and the interpreter that runs
+# a flowgraph must share that ABI to import them.
+# ---------------------------------------------------------------------------
+PYTHON_VERSION = "3.11"
+
+python = use_extension("@rules_python//python/extensions:python.bzl", "python")
+python.toolchain(
+    is_default = True,
+    python_version = PYTHON_VERSION,
+)
+
+pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
+pip.parse(
+    hub_name = "pypi",
+    python_version = PYTHON_VERSION,
+    requirements_lock = "//:requirements.lock",
+)
+use_repo(pip, "pypi")
+
+# ---------------------------------------------------------------------------
+# GNU Radio from Nix. Our own module extension (no rules_nixpkgs needed) runs
+# `nix build .#grenv` and exposes the resulting site-packages to Bazel. Fetching
+# @grenv requires `nix` on PATH -- only the flowgraph targets pull it in, so
+# non-SDR targets still build on a machine without Nix.
+# ---------------------------------------------------------------------------
+grenv = use_extension("//nix:grenv.bzl", "grenv")
+use_repo(grenv, "grenv")

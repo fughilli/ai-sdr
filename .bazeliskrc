@@ -1,0 +1,3 @@
+# Cache the pinned Bazel binary inside the workspace so it survives container
+# rebuilds / fresh homes. Path is relative to the workspace root.
+BAZELISK_HOME=.bazelisk

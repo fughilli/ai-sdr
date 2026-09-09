@@ -1,0 +1,14 @@
+load("//sdr:defs.bzl", "gr_py_binary")
+
+# Each flowgraph is a headless py_binary. Run with `bazel run //graphs:<name>`.
+# Building these requires `nix` on PATH (they pull in the @grenv GNU Radio env).
+
+gr_py_binary(
+    name = "iq_capture",
+    srcs = ["iq_capture.py"],
+)
+
+gr_py_binary(
+    name = "power_scan",
+    srcs = ["power_scan.py"],
+)

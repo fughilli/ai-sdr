@@ -1,0 +1,2 @@
+# The Nix<->Bazel bridge lives in grenv.bzl (loaded by MODULE.bazel). This
+# package is otherwise empty.

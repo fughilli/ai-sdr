@@ -1,0 +1,19 @@
+load("@pypi//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["defs.bzl"])
+
+# The framework + the GNU Radio bridge. `imports = [".."]` puts the repo root on
+# sys.path so flowgraphs can `import sdr.*`. Depending on @grenv is what pulls the
+# Nix build into the graph (and thus requires `nix` for these targets).
+py_library(
+    name = "sdr",
+    srcs = glob(["*.py"]),
+    imports = [".."],
+    deps = [
+        "@grenv//:grenv",
+        requirement("pyyaml"),
+    ],
+)

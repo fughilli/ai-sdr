@@ -1,0 +1,7 @@
+# Direct Python deps for the ai-sdr framework (human-edited).
+# Regenerate the lock:  bazel run //:generate_requirements_lock
+#
+# NOTE: GNU Radio, osmosdr, and numpy come from the Nix env (//nix:grenv.bzl) and
+# are layered onto sys.path AHEAD of these, so anything here must not shadow them.
+# Keep this list to pure-Python helpers the framework itself uses.
+PyYAML>=6.0

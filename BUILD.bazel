@@ -1,0 +1,16 @@
+load("@rules_uv//uv:pip.bzl", "pip_compile")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "flake.nix",
+    "flake.lock",
+])
+
+# Regenerate the lock:  bazel run //:generate_requirements_lock
+# Verify it is current (CI):  bazel run //:generate_requirements_lock -- --check
+pip_compile(
+    name = "generate_requirements_lock",
+    requirements_in = "//:requirements.in",
+    requirements_txt = "//:requirements.lock",
+)
